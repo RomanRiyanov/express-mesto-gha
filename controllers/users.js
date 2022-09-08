@@ -2,13 +2,13 @@ const User = require('../models/user');
 
 const getUsers = (req, res) => {
   User.find({})
-    .then((users) => res.send(users))
+    .then((users) => res.send({ data: users }))
     .catch((error) => res.send({ message: error }));
 };
 
 const getUserById = (req, res) => {
-  User.findById(req.params.id)
-    .then((users) => res.send(users))
+  User.findById(req.params.userId)
+    .then((user) => res.send({ data: user }))
     .catch((error) => res.send({ message: error }));
 };
 

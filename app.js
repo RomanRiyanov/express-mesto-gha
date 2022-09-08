@@ -6,8 +6,8 @@ const routerUsers = require('./routes/users');
 const app = express();
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/users', routerUsers);
-app.use('/users/:userId', routerUsers);
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
