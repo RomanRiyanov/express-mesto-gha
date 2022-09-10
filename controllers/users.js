@@ -18,17 +18,17 @@ const getUserById = (req, res) => {
 
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
-  if (name && about && avatar && name.length >= 2) {
+  if (name && about && avatar && name.length >= 2 && name.length <= 30) {
     User.create({ name, about, avatar })
       .then((user) => res.send(user))
       .catch((error) => res.status(INPUT_ERROR).send({ message: 'Пользователь не найден' }, error));
-  } else res.status(ERROR).send({ message: 'Неверно введены данные' });
+  } else res.status(INPUT_ERROR).send({ message: 'Неверно введены данные' });
 };
 
 const updateUser = (req, res) => {
   const { name, about } = req.body;
 
-  if (name && about && name.length >= 2) {
+  if (name && about && name.length >= 2 && name.length <= 30) {
     User.findByIdAndUpdate(
       req.user._id,
       { name, about },
@@ -40,7 +40,7 @@ const updateUser = (req, res) => {
     )
       .then((user) => res.send(user))
       .catch((error) => res.status(INPUT_ERROR).send({ message: 'Пользователь не найден' }, error));
-  } else res.status(ERROR).send({ message: 'Неверно введены данные' });
+  } else res.status(INPUT_ERROR).send({ message: 'Неверно введены данные' });
 };
 
 const updateAvatar = (req, res) => {
