@@ -21,8 +21,8 @@ const createUser = (req, res) => {
   if (name && about && avatar) {
     User.create({ name, about, avatar })
       .then((user) => res.send(user))
-      .catch((error) => res.status(ERROR).send({ message: error }));
-  } else res.status(INPUT_ERROR).send({ message: 'Неверно введены данные' });
+      .catch((error) => res.status(INPUT_ERROR).send({ message: 'Пользователь не найден' }, error));
+  } else res.status(ERROR).send({ message: 'Неверно введены данные' });
 };
 
 const updateUser = (req, res) => {
@@ -39,8 +39,8 @@ const updateUser = (req, res) => {
       },
     )
       .then((user) => res.send(user))
-      .catch((error) => res.status(ERROR).send({ message: error }));
-  } else res.status(INPUT_ERROR).send({ message: 'Неверно введены данные' });
+      .catch((error) => res.status(INPUT_ERROR).send({ message: 'Пользователь не найден' }, error));
+  } else res.status(ERROR).send({ message: 'Неверно введены данные' });
 };
 
 const updateAvatar = (req, res) => {
@@ -57,8 +57,8 @@ const updateAvatar = (req, res) => {
       },
     )
       .then((user) => res.send(user))
-      .catch((error) => res.status(ERROR).send({ message: error }));
-  } else res.status(INPUT_ERROR).send({ message: 'Неверно введены данные' });
+      .catch((error) => res.status(INPUT_ERROR).send({ message: 'Пользователь не найден' }, error));
+  } else res.status(ERROR).send({ message: 'Неверно введены данные' });
 };
 
 module.exports = {
