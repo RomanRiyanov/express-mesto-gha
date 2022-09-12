@@ -24,14 +24,7 @@ const getUserById = (req, res) => {
 
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
-  if (name
-    && about
-    && avatar
-  // && name.length >= 2
-  // && name.length <= 30
-  //  && about.length >= 2
-  //  && about.length <= 30
-  ) {
+  if (name && about && avatar) {
     User.create({ name, about, avatar })
       .then((user) => res.send(user))
       .catch(() => res.status(INPUT_ERROR).send({ message: 'Неверно введены данные' }));
@@ -41,13 +34,7 @@ const createUser = (req, res) => {
 const updateUser = (req, res) => {
   const { name, about } = req.body;
 
-  if (name
-     && about
-  //  && name.length >= 2 &&
-  //  name.length <= 30 &&
-  //   about.length >= 2 &&
-  //    about.length <= 30
-  ) {
+  if (name && about) {
     User.findByIdAndUpdate(
       req.user._id,
       { name, about },

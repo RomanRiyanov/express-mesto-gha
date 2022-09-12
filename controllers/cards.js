@@ -17,18 +17,18 @@ const createCard = (req, res) => {
     Card.create({ name, link, owner: req.user._id })
       .then((card) => res.send(card))
       .catch(() => res.status(INPUT_ERROR).send({ message: 'Неверно введены данные' }));
-  } else res.status(NOT_FOUND_ERROR).send({ message: 'Карточка не найдена' });
+  } else res.status(INPUT_ERROR).send({ message: 'Карточка не найдена' });
 };
 
 const deleteCard = (req, res) => {
   if (mongoose.Types.ObjectId.isValid(req.params.cardId)) {
     Card.findByIdAndRemove(req.params.cardId)
       .orFail(() => {
-        res.status(INPUT_ERROR).send({ message: 'id карточки введен неверно' });
+        res.status(NOT_FOUND_ERROR).send({ message: 'id карточки введен неверно' });
       })
       .then((card) => res.send({ data: card }))
-      .catch((error) => res.status(NOT_FOUND_ERROR).send({ message: 'Карточка не найдена' }, error));
-  } else res.status(NOT_FOUND_ERROR).send({ message: 'id карточки введен неверно' });
+      .catch((error) => res.status(INPUT_ERROR).send({ message: 'Карточка не найдена' }, error));
+  } else res.status(INPUT_ERROR).send({ message: 'id карточки введен неверно' });
 };
 
 const likeCard = (req, res) => {
