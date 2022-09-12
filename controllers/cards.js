@@ -14,12 +14,9 @@ const createCard = (req, res) => {
 
   if (name && link) {
     Card.create({ name, link, owner: req.user._id })
-      .orFail(() => {
-        res.status(INPUT_ERROR).send({ message: 'Неверно введены данные' });
-      })
       .then((card) => res.send(card))
-      .catch(() => res.status(NOT_FOUND_ERROR).send({ message: 'Карточка не найдена' }));
-  } else res.status(INPUT_ERROR).send({ message: 'Неверно введены данные' });
+      .catch(() => res.status(INPUT_ERROR).send({ message: 'Неверно введены данные' }));
+  } else res.status(NOT_FOUND_ERROR).send({ message: 'Карточка не найдена' });
 };
 
 const deleteCard = (req, res) => {
@@ -38,10 +35,10 @@ const likeCard = (req, res) => {
     { new: true },
   )
     .orFail(() => {
-      res.status(INPUT_ERROR).send({ message: 'id карточки введен неверно' });
+      res.status(NOT_FOUND_ERROR).send({ message: 'Карточка не найдена' });
     })
     .then((card) => res.send({ data: card }))
-    .catch(() => res.status(INPUT_ERROR).send({ message: 'Карточка не найдена' }));
+    .catch(() => res.status(INPUT_ERROR).send({ message: 'id карточки введен неверно' }));
 };
 
 const dislikeCard = (req, res) => {
