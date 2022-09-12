@@ -16,7 +16,7 @@ const getUsers = (req, res) => {
 const getUserById = (req, res) => {
   User.findById(req.params.userId)
     .orFail(() => {
-      res.status(NOT_FOUND_ERROR).send({ message: 'Пользователь не найден' });
+      res.status(INPUT_ERROR).send({ message: 'Пользователь не найден' });
     })
     .then((user) => res.send({ data: user }))
     .catch(() => res.status(NOT_FOUND_ERROR).send({ message: 'Пользователь не найден' }));
@@ -35,7 +35,7 @@ const createUser = (req, res) => {
     User.create({ name, about, avatar })
       .then((user) => res.send(user))
       .catch(() => res.status(INPUT_ERROR).send({ message: 'Неверно введены данные' }));
-  } else res.status(NOT_FOUND_ERROR).send({ message: 'Пользователь не найден' });
+  } else res.status(INPUT_ERROR).send({ message: 'Пользователь не найден' });
 };
 
 const updateUser = (req, res) => {
