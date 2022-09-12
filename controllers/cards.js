@@ -16,7 +16,7 @@ const createCard = (req, res) => {
   if (name && link) {
     Card.create({ name, link, owner: req.user._id })
       .then((card) => res.send(card))
-      .catch((error) => res.status(ERROR).send({ message: error }));
+      .catch(() => res.status(NOT_FOUND_ERROR).send({ message: 'Карточка не найдена' }));
   } else res.status(INPUT_ERROR).send({ message: 'Неверно введены данные' });
 };
 
@@ -32,8 +32,11 @@ const likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
+    .orFail(() => {
+      res.status(INPUT_ERROR).send({ message: 'id карточки введен неверно' });
+    })
     .then((card) => res.send({ data: card }))
-    .catch((error) => res.status(ERROR).send({ message: error }));
+    .catch(() => res.status(NOT_FOUND_ERROR).send({ message: 'Карточка не найдена' }));
 };
 
 const dislikeCard = (req, res) => {
@@ -42,8 +45,11 @@ const dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
+    .orFail(() => {
+      res.status(INPUT_ERROR).send({ message: 'id карточки введен неверно' });
+    })
     .then((card) => res.send({ data: card }))
-    .catch((error) => res.status(ERROR).send({ message: error }));
+    .catch(() => res.status(NOT_FOUND_ERROR).send({ message: 'Карточка не найдена' }));
 };
 
 module.exports = {
