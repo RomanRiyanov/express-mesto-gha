@@ -6,12 +6,18 @@ const ERROR = 500;
 
 const getUsers = (req, res) => {
   User.find({})
+    .orFail(() => {
+      throw new Error('Пользователей пока нет в базе данных');
+    })
     .then((users) => res.send({ data: users }))
     .catch(() => res.status(NOT_FOUND_ERROR).send({ message: 'Пользователей не найдено' }));
 };
 
 const getUserById = (req, res) => {
   User.findById(req.params.userId)
+    .orFail(() => {
+      throw new Error(`Пользователь с таким _id ${req.params.userId} не найден`);
+    })
     .then((user) => res.send({ data: user }))
     .catch(() => res.status(NOT_FOUND_ERROR).send({ message: 'Пользователь не найден' }));
 };
@@ -28,7 +34,7 @@ const createUser = (req, res) => {
   ) {
     User.create({ name, about, avatar })
       .then((user) => res.send(user))
-      .catch(() => res.status(INPUT_ERROR).send({ message: 'Пользователь не найден' }));
+      .catch(() => res.status(NOT_FOUND_ERROR).send({ message: 'Пользователь не найден' }));
   } else res.status(INPUT_ERROR).send({ message: 'Неверно введены данные' });
 };
 
@@ -51,8 +57,11 @@ const updateUser = (req, res) => {
         upsert: true,
       },
     )
+      .orFail(() => {
+        throw new Error(`Пользователь с таким _id ${req.user._id} не найден`);
+      })
       .then((user) => res.send(user))
-      .catch(() => res.status(INPUT_ERROR).send({ message: 'Пользователь не найден' }));
+      .catch(() => res.status(NOT_FOUND_ERROR).send({ message: 'Пользователь не найден' }));
   } else res.status(INPUT_ERROR).send({ message: 'Неверно введены данные' });
 };
 
@@ -70,7 +79,7 @@ const updateAvatar = (req, res) => {
       },
     )
       .then((user) => res.send(user))
-      .catch(() => res.status(INPUT_ERROR).send({ message: 'Пользователь не найден' }));
+      .catch(() => res.status(NOT_FOUND_ERROR).send({ message: 'Пользователь не найден' }));
   } else res.status(ERROR).send({ message: 'Неверно введены данные' });
 };
 
