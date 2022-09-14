@@ -53,6 +53,7 @@ const likeCard = (req, res) => {
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
+      console.log(err.name);
       errorHandler(err, res);
     //   if (err.name === 'NotFoundError') {
     //     res.status(NOT_FOUND_ERROR).send({ message: err.message });
