@@ -2,16 +2,12 @@ const createError = require('http-errors');
 const User = require('../models/user');
 const { errorHandler } = require('../utils/utils');
 
-// const INPUT_ERROR = 400;
-// const NOT_FOUND_ERROR = 404;
-// const DEFAULT_ERROR = 500;
-
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch((err) => errorHandler(err, res));
-  // res.status(DEFAULT_ERROR).send({ message: 'Пользователей не найдено' })
-  // );
+    .catch((err) => {
+      errorHandler(err, res);
+    });
 };
 
 const getUserById = (req, res) => {
@@ -22,9 +18,6 @@ const getUserById = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       errorHandler(err, res);
-      // if (err.name === 'NotFoundError') {
-      //   res.status(NOT_FOUND_ERROR).send({ message: err.message });
-      // } else res.status(DEFAULT_ERROR).send({ message: 'Ошибка на стороне сервера' });
     });
 };
 
@@ -35,10 +28,6 @@ const createUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       errorHandler(err, res);
-      // if (err.name === 'ValidationError') {
-      //   res.status(INPUT_ERROR)
-      // .send({ message: 'Переданы некорректные данные при создании пользователя' });
-      // } else res.status(DEFAULT_ERROR).send({ message: 'Ошибка на стороне сервера' });
     });
 };
 
@@ -59,12 +48,6 @@ const updateUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       errorHandler(err, res);
-      // if (err.name === 'NotFoundError') {
-      //   res.status(NOT_FOUND_ERROR).send({ message: err.message });
-      // } else if (err.name === 'ValidationError') {
-      //   res.status(INPUT_ERROR)
-      // .send({ message: 'Переданы некорректные данные при обновлении профиля' });
-      // } else res.status(DEFAULT_ERROR).send({ message: 'Ошибка на стороне сервера' });
     });
 };
 
@@ -85,12 +68,6 @@ const updateAvatar = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       errorHandler(err, res);
-      // if (err.name === 'NotFoundError') {
-      //   res.status(NOT_FOUND_ERROR).send({ message: err.message });
-      // } else if (err.name === 'ValidationError') {
-      //   res.status(INPUT_ERROR)
-      // .send({ message: 'Переданы некорректные данные при обновлении профиля' });
-      // } else res.status(DEFAULT_ERROR).send({ message: 'Ошибка на стороне сервера' });
     });
 };
 
