@@ -1,6 +1,6 @@
 const createError = require('http-errors');
 const Card = require('../models/card');
-const errorHandler = require('../utils/utils');
+const { errorHandler } = require('../utils/utils');
 
 // const INPUT_ERROR = 400;
 // const NOT_FOUND_ERROR = 404;
