@@ -1,73 +1,87 @@
+const createError = require('http-errors');
 const User = require('../models/user');
 
 const INPUT_ERROR = 400;
 const NOT_FOUND_ERROR = 404;
-const ERROR = 500;
+const DEFAULT_ERROR = 500;
 
 const getUsers = (req, res) => {
   User.find({})
-    .orFail(() => {
-      throw new Error('Пользователей пока нет в базе данных');
-    })
     .then((users) => res.send({ data: users }))
-    .catch(() => res.status(NOT_FOUND_ERROR).send({ message: 'Пользователей не найдено' }));
+    .catch(() => res.status(DEFAULT_ERROR).send({ message: 'Пользователей не найдено' }));
 };
 
 const getUserById = (req, res) => {
   User.findById(req.params.userId)
     .orFail(() => {
-      res.status(NOT_FOUND_ERROR).send({ message: 'Пользователь не найден' });
+      throw createError(404, 'Пользователь с указанным _id не найден');
     })
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(INPUT_ERROR).send({ message: 'Пользователь не найден' }));
+    .catch((err) => {
+      if (err.name === 'NotFoundError') {
+        res.status(NOT_FOUND_ERROR).send({ message: err.message });
+      } else res.status(DEFAULT_ERROR).send({ message: 'Ошибка на стороне сервера' });
+    });
 };
 
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
-  if (name && about && avatar) {
-    User.create({ name, about, avatar })
-      .then((user) => res.send(user))
-      .catch(() => res.status(INPUT_ERROR).send({ message: 'Неверно введены данные' }));
-  } else res.status(INPUT_ERROR).send({ message: 'Пользователь не найден' });
+
+  User.create({ name, about, avatar })
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(INPUT_ERROR).send({ message: 'Переданы некорректные данные при создании пользователя' });
+      } else res.status(DEFAULT_ERROR).send({ message: 'Ошибка на стороне сервера' });
+    });
 };
 
 const updateUser = (req, res) => {
   const { name, about } = req.body;
 
-  if (name && about) {
-    User.findByIdAndUpdate(
-      req.user._id,
-      { name, about },
-      {
-        new: true,
-        runValidators: true,
-        upsert: true,
-      },
-    )
-      .orFail(() => {
-        throw new Error(`Пользователь с таким _id ${req.user._id} не найден`);
-      })
-      .then((user) => res.send(user))
-      .catch(() => res.status(NOT_FOUND_ERROR).send({ message: 'Пользователь не найден' }));
-  } else res.status(INPUT_ERROR).send({ message: 'Неверно введены данные' });
+  User.findByIdAndUpdate(
+    req.user._id,
+    { name, about },
+    {
+      new: true,
+      runValidators: true,
+    },
+  )
+    .orFail(() => {
+      throw createError(404, 'Пользователь с указанным _id не найден');
+    })
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'NotFoundError') {
+        res.status(NOT_FOUND_ERROR).send({ message: err.message });
+      } else if (err.name === 'ValidationError') {
+        res.status(INPUT_ERROR).send({ message: 'Переданы некорректные данные при обновлении профиля' });
+      } else res.status(DEFAULT_ERROR).send({ message: 'Ошибка на стороне сервера' });
+    });
 };
 
 const updateAvatar = (req, res) => {
   const { avatar } = req.body;
 
-  if (avatar) {
-    User.findByIdAndUpdate(
-      req.user._id,
-      { avatar },
-      {
-        new: true,
-        runValidators: true,
-        upsert: true,
-      },
-    )
-      .then((user) => res.send(user))
-      .catch(() => res.status(NOT_FOUND_ERROR).send({ message: 'Пользователь не найден' }));
-  } else res.status(ERROR).send({ message: 'Неверно введены данные' });
+  User.findByIdAndUpdate(
+    req.user._id,
+    { avatar },
+    {
+      new: true,
+      runValidators: true,
+    },
+  )
+    .orFail(() => {
+      throw createError(404, 'Пользователь с указанным _id не найден');
+    })
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'NotFoundError') {
+        res.status(NOT_FOUND_ERROR).send({ message: err.message });
+      } else if (err.name === 'ValidationError') {
+        res.status(INPUT_ERROR).send({ message: 'Переданы некорректные данные при обновлении профиля' });
+      } else res.status(DEFAULT_ERROR).send({ message: 'Ошибка на стороне сервера' });
+    });
 };
 
 module.exports = {

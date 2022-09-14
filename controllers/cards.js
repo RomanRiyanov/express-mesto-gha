@@ -1,34 +1,41 @@
-const { default: mongoose } = require('mongoose');
+const createError = require('http-errors');
 const Card = require('../models/card');
 
 const INPUT_ERROR = 400;
 const NOT_FOUND_ERROR = 404;
+const DEFAULT_ERROR = 500;
 
 const getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch((error) => res.status(NOT_FOUND_ERROR).send({ message: 'Карточка не найдена' }, error));
+    .catch(() => {
+      res.status(DEFAULT_ERROR).send({ message: 'Карточка не найдена' });
+    });
 };
 
 const createCard = (req, res) => {
   const { name, link } = req.body;
 
-  if (name && link) {
-    Card.create({ name, link, owner: req.user._id })
-      .then((card) => res.send(card))
-      .catch(() => res.status(INPUT_ERROR).send({ message: 'Неверно введены данные' }));
-  } else res.status(INPUT_ERROR).send({ message: 'Карточка не найдена' });
+  Card.create({ name, link, owner: req.user._id })
+    .then((card) => res.send(card))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(INPUT_ERROR).send({ message: 'Неверно введены данные' });
+      } else res.status(DEFAULT_ERROR).send({ message: 'Ошибка на стороне сервера' });
+    });
 };
 
 const deleteCard = (req, res) => {
-  if (mongoose.Types.ObjectId.isValid(req.params.cardId)) {
-    Card.findByIdAndRemove(req.params.cardId)
-      .orFail(() => {
-        res.status(NOT_FOUND_ERROR).send({ message: 'id карточки введен неверно' });
-      })
-      .then((card) => res.send({ data: card }))
-      .catch((error) => res.status(INPUT_ERROR).send({ message: 'Карточка не найдена' }, error));
-  } else res.status(INPUT_ERROR).send({ message: 'id карточки введен неверно' });
+  Card.findByIdAndRemove(req.params.cardId)
+    .orFail(() => {
+      throw createError(404, 'Карточка с указанным _id не найдена');
+    })
+    .then((card) => res.send({ data: card }))
+    .catch((err) => {
+      if (err.name === 'NotFoundError') {
+        res.status(NOT_FOUND_ERROR).send({ message: err.message });
+      } else res.status(DEFAULT_ERROR).send({ message: 'Ошибка на стороне сервера' });
+    });
 };
 
 const likeCard = (req, res) => {
@@ -38,10 +45,16 @@ const likeCard = (req, res) => {
     { new: true },
   )
     .orFail(() => {
-      res.status(NOT_FOUND_ERROR).send({ message: 'Карточка не найдена' });
+      throw createError(404, 'Карточка с указанным _id не найдена');
     })
     .then((card) => res.send({ data: card }))
-    .catch(() => res.status(INPUT_ERROR).send({ message: 'id карточки введен неверно' }));
+    .catch((err) => {
+      if (err.name === 'NotFoundError') {
+        res.status(NOT_FOUND_ERROR).send({ message: err.message });
+      } else if (err.name === 'ValidationError') {
+        res.status(INPUT_ERROR).send({ message: 'Переданы некорректные данные при постановке/снятии лайка' });
+      } else res.status(DEFAULT_ERROR).send({ message: 'Ошибка на стороне сервера' });
+    });
 };
 
 const dislikeCard = (req, res) => {
@@ -51,10 +64,16 @@ const dislikeCard = (req, res) => {
     { new: true },
   )
     .orFail(() => {
-      res.status(NOT_FOUND_ERROR).send({ message: 'id карточки введен неверно' });
+      throw createError(404, 'Карточка с указанным _id не найдена');
     })
     .then((card) => res.send({ data: card }))
-    .catch(() => res.status(INPUT_ERROR).send({ message: 'Карточка не найдена' }));
+    .catch((err) => {
+      if (err.name === 'NotFoundError') {
+        res.status(NOT_FOUND_ERROR).send({ message: err.message });
+      } else if (err.name === 'ValidationError') {
+        res.status(INPUT_ERROR).send({ message: 'Переданы некорректные данные при постановке/снятии лайка' });
+      } else res.status(DEFAULT_ERROR).send({ message: 'Ошибка на стороне сервера' });
+    });
 };
 
 module.exports = {
