@@ -23,6 +23,8 @@ const getUserById = (req, res) => {
     .catch((err) => {
       if (err.statusCode === 404) {
         res.status(NOT_FOUND_ERROR).send({ message: err.message });
+      } else if (err.name === 'ValidationError' || err.name === 'CastError') {
+        res.status(INPUT_ERROR).send({ message: 'Переданы некорректный _id профиля' });
       } else res.status(DEFAULT_ERROR).send({ message: 'Ошибка на стороне сервера' });
     });
 };
