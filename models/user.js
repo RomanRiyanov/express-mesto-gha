@@ -18,6 +18,7 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    match: [/^http(s|):\/\/(www\.|)mysite\.co\?search=pattern&co=43/, 'Некорректный адрес аватара'],
   },
   email: {
     type: String,
@@ -34,11 +35,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 8,
+    select: false,
   },
 });
 
 userSchema.statics.findUserByEmailAndPass = function (email, password) {
-  return this.findOne({ email })
+  return this.findOne({ email }).select('+password')
     .orFail(() => {
       const error = new Error('Неправильные почта или пароль');
       error.statusCode = 401;
