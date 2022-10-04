@@ -49,20 +49,20 @@ const login = (req, res, next) => {
         { expiresIn: '7d' },
       );
 
-      // res
-      //   .cookie('jwt', token, {
-      //     maxAge: 3600 * 24 * 7,
-      //     httpOnly: true,
-      //     sameSite: true,
-      //   })
-      //   .end();
+      res
+        .cookie('jwt', token, {
+          maxAge: 3600 * 24 * 7,
+          httpOnly: true,
+          sameSite: true,
+        })
+        .end();
 
-      req.headers.authorization = token;
+      // req.headers.authorization = token;
 
-      res.send({ token });
+      // res.send({ token });
     })
     .catch(() => {
-      // res.cookie('jwt', '', { expires: new Date() });
+      res.cookie('jwt', '', { expires: new Date() });
       // res.status(401).send({ message: err.message });
       next(new AuthorizationError('Необходима авторизация'));
     });
