@@ -1,7 +1,9 @@
 /* eslint-disable consistent-return */
 const jwt = require('jsonwebtoken');
 
-const { JWT_SECRET } = process.env;
+// const { JWT_SECRET } = process.env;
+const JWT_SECRET = 'd68261db864dad0fba0061a8ce2e86fc1828d43a1a59041d8314b10261a85412';
+
 const AuthorizationError = require('../errors/auth_err');
 
 module.exports = (req, res, next) => {
