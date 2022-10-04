@@ -55,7 +55,7 @@ const login = (req, res, next) => {
           httpOnly: true,
           // sameSite: true,
         })
-        .end();
+        .send(email, password);
 
       // req.headers.authorization = token;
 
