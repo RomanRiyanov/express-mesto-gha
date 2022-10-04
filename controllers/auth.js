@@ -20,7 +20,13 @@ const createUser = (req, res, next) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send({
+      _id: user._id,
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+      email: user.email,
+    }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         // res.status(INPUT_ERROR).send({
@@ -43,16 +49,20 @@ const login = (req, res, next) => {
         { expiresIn: '7d' },
       );
 
-      res
-        .cookie('jwt', token, {
-          maxAge: 3600 * 24 * 7,
-          httpOnly: true,
-          sameSite: true,
-        })
-        .end();
+      // res
+      //   .cookie('jwt', token, {
+      //     maxAge: 3600 * 24 * 7,
+      //     httpOnly: true,
+      //     sameSite: true,
+      //   })
+      //   .end();
+
+      req.headers.authorization = token;
+
+      res.send({ token });
     })
     .catch(() => {
-      res.cookie('jwt', '', { expires: new Date() });
+      // res.cookie('jwt', '', { expires: new Date() });
       // res.status(401).send({ message: err.message });
       next(new AuthorizationError('Необходима авторизация'));
     });
