@@ -24,14 +24,14 @@ app.post('/signup', celebrate({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
     avatar: Joi.string(),
-    email: Joi.string().required(),
-    password: Joi.string().min(8),
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
   }),
 }), createUser);
 app.post('/signin', celebrate({
   body: Joi.object().keys({
-    email: Joi.string().required(),
-    password: Joi.string().min(8),
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
   }),
 }), login);
 
