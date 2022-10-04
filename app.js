@@ -4,14 +4,14 @@ const { errors } = require('celebrate');
 require('dotenv').config();
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const { celebrate } = require('celebrate');
-const Joi = require('joi');
+const { celebrate, Joi } = require('celebrate');
+// const Joi = require('joi');
 const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
 const { login, createUser } = require('./controllers/auth');
 const auth = require('./middlewares/auth');
 
-Joi.objectId = require('joi-objectid')(Joi);
+// Joi.objectId = require('joi-objectid')(Joi);
 
 const app = express();
 
@@ -23,7 +23,7 @@ app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string(),
+    avatar: Joi.string().pattern(/^http(s)?:\/\/(www.)?([0-9A-Za-z.@:%_/+-~#=]+)+(.[a-zA-Z]{2,3})(\/[0-9A-Za-z.@:%_/+-~#=]+)*$/),
     email: Joi.string().email().required(),
     password: Joi.string().required(),
   }),

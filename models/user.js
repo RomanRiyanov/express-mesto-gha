@@ -18,8 +18,9 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
-    match: [/^http(s|):\/\/(www\.|)mysite\.co\?search=pattern&co=43/, 'Некорректный адрес аватара'],
+    match: [/^http(s)?:\/\/(www.)?([0-9A-Za-z.@:%_/+-~#=]+)+(.[a-zA-Z]{2,3})(\/[0-9A-Za-z.@:%_/+-~#=]+)*$/, 'Некорректный адрес аватара'],
   },
+  // ^http(s)?:\/\/(www.)?([0-9A-Za-z.@:%_\/+-~#=]+)+(.[a-zA-Z]{2,3})(\/[0-9A-Za-z.@:%_\/+-~#=]+)*$
   email: {
     type: String,
     required: true,
