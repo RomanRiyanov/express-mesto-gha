@@ -1,5 +1,5 @@
 const router = require('express').Router();
-// const { celebrate } = require('celebrate');
+const { celebrate } = require('celebrate');
 const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
 
@@ -18,11 +18,28 @@ router.get(
   }),
 }), */ getUsers,
 );
-router.get('/me', getCurrentUser);
+router.get(
+  '/me',
+  // celebrate({
+  //   user: Joi.object().keys({
+  //     _id: Joi.string().alphanum().length(24),
+  //   }),
+  // }),
+  getCurrentUser,
+);
 router.get('/:userId', getUserById);
 
-router.patch('/me', updateUser);
-router.patch('/me/avatar', updateAvatar);
+router.patch('/me', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+  }),
+}), updateUser);
+router.patch('/me/avatar', celebrate({
+  body: Joi.object().keys({
+    avatar: Joi.string(),
+  }),
+}), updateAvatar);
 
 module.exports = router;
 // name: {

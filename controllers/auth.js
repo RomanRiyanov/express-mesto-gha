@@ -45,7 +45,7 @@ const login = (req, res, next) => {
 
       res
         .cookie('jwt', token, {
-          maxAge: 604800,
+          maxAge: 3600 * 24 * 7,
           httpOnly: true,
           sameSite: true,
         })
