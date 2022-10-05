@@ -40,10 +40,9 @@ const deleteCard = (req, res, next) => {
       next(new NotFoundError('Передан несуществующий _id карточки'));
     })
     .then((card) => {
-      if (req.user._id !== card.owner) {
-        next(new ForbiddenError('Нельзя удалять чужую карточку'));
-      }
-      res.send({ data: card });
+      if (req.user._id === card.owner) {
+        res.send({ data: card });
+      } else next(new ForbiddenError('Нельзя удалять чужую карточку'));
     })
     // .catch((err) => {
     //   if (err.statusCode === 404) {
