@@ -33,8 +33,14 @@ const createCard = (req, res, next) => {
 
 const deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
+    .orFail(() => {
+    // const error = new Error('Передан несуществующий _id карточки');
+    // error.statusCode = 404;
+    // throw error;
+      next(new NotFoundError('Передан несуществующий _id карточки'));
+    })
     .then((card) => {
-      if (req.user._id === card.owner) {
+      if (req.user._id !== card.owner) {
         next(new ForbiddenError('Нельзя удалять чужую карточку'));
       }
       res.send({ data: card });
