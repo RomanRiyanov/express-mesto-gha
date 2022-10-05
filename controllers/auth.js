@@ -52,7 +52,7 @@ const login = (req, res, next) => {
 
       res
         .cookie('jwt', token, {
-          maxAge: 3600 * 24 * 7,
+          maxAge: 3600000 * 24 * 7,
           httpOnly: true,
           sameSite: true,
         })
@@ -65,7 +65,6 @@ const login = (req, res, next) => {
     .catch(() => {
       res.cookie('jwt', '', { expires: new Date() });
       // res.status(401).send({ message: err.message });
-      // res.status(401).clearCookie('jwt').send('Необходима авторизация, err.mesage: ', err.message);
 
       next(new AuthorizationError('Необходима авторизация'));
     });

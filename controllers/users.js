@@ -17,15 +17,23 @@ const getUsers = (req, res, next) => {
 };
 
 const getCurrentUser = (req, res, next) => {
-  const user = req.user._id;
+  // const user = req.user._id;
 
-  if (!user) {
-    // return res
-    //   .status(401)
-    //   .send({ message: 'Пользователь не авторизован' });
-    next(new AuthorizationError('Необходима авторизация'));
-  }
-  return res.send({ user });
+  // if (!user) {
+  //   // return res
+  //   //   .status(401)
+  //   //   .send({ message: 'Пользователь не авторизован' });
+  //   next(new AuthorizationError('Необходима авторизация'));
+  // }
+  User.findById(req.user._id)
+    .orFail(() => {
+    // const error = new Error('Пользователь по указанному _id не найден');
+    // error.statusCode = 404;
+    // throw error;
+      next(new AuthorizationError('Необходима авторизация'));
+    })
+    .then((user) => res.send({ data: user }))
+    .catch(next);
 };
 
 const getUserById = (req, res, next) => {

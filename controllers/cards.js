@@ -4,6 +4,7 @@ const Card = require('../models/card');
 
 const NotFoundError = require('../errors/not_found_err');
 const InputError = require('../errors/input_err');
+const ForbiddenError = require('../errors/forbidden_err');
 // const AuthorizationError = require('../errors/auth_err');
 
 const getCards = (req, res, next) => {
@@ -32,13 +33,12 @@ const createCard = (req, res, next) => {
 
 const deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
-    .orFail(() => {
-      // const error = new Error('Карточка с указанным _id не найдена');
-      // error.statusCode = 404;
-      // throw error;
-      next(new NotFoundError('Карточка с указанным _id не найдена'));
+    .then((card) => {
+      if (req.user._id === card.owner) {
+        next(new ForbiddenError('Нельзя удалять чужую карточку'));
+      }
+      res.send({ data: card });
     })
-    .then((card) => res.send({ data: card }))
     // .catch((err) => {
     //   if (err.statusCode === 404) {
     //     res.status(NOT_FOUND_ERROR).send({ message: err.message });
