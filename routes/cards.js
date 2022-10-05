@@ -12,9 +12,6 @@ router.post('/', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     link: Joi.string().required().pattern(/^http(s)?:\/\/(www.)?([0-9A-Za-z.@:%_/+-~#=]+)+(.[a-zA-Z]{2,3})(\/[0-9A-Za-z.@:%_/+-~#=]+)*$/),
-    // owner: Joi.objectId().required(),
-    // likes: Joi.objectId(),
-    // createdAt: Joi.date(),
   }),
 }), createCard);
 router.delete('/:cardId', celebrate({

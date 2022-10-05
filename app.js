@@ -5,13 +5,10 @@ require('dotenv').config();
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { celebrate, Joi } = require('celebrate');
-// const Joi = require('joi');
 const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
 const { login, createUser } = require('./controllers/auth');
 const auth = require('./middlewares/auth');
-
-// Joi.objectId = require('joi-objectid')(Joi);
 
 const app = express();
 

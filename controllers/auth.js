@@ -2,17 +2,11 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
-// const { INPUT_ERROR, DEFAULT_ERROR } = require('../utils/constants');
-
-// const NotFoundError = require('../errors/not_found_err');
 const InputError = require('../errors/input_err');
 const AuthorizationError = require('../errors/auth_err');
 const ConflictError = require('../errors/conflict_err');
 
-// const { JWT_SECRET } = process.env;
 const { JWT_SECRET = 'd68261db864dad0fba0061a8ce2e86fc1828d43a1a59041d8314b10261a85412' } = process.env;
-
-// const JWT_SECRET = 'd68261db864dad0fba0061a8ce2e86fc1828d43a1a59041d8314b10261a85412';
 
 const createUser = (req, res, next) => {
   const {
@@ -32,8 +26,6 @@ const createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        // res.status(INPUT_ERROR).send({
-        // message: 'Переданы некорректные данные при создании пользователя' });
         next(new InputError('Переданы некорректные данные при создании пользователя'));
       } else if (err.code === 11000) {
         next(new ConflictError('Пользователь с данным email уже зарегестрирован'));
@@ -59,15 +51,9 @@ const login = (req, res, next) => {
           sameSite: true,
         })
         .send({ email, password });
-
-      // req.headers.authorization = token;
-
-      // res.send({ token });
     })
     .catch(() => {
       res.cookie('jwt', '', { expires: new Date() });
-      // res.status(401).send({ message: err.message });
-
       next(new AuthorizationError('Необходима авторизация'));
     });
 };

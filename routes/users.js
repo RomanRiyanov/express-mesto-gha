@@ -7,26 +7,8 @@ const {
   getUsers, getUserById, updateUser, updateAvatar, getCurrentUser,
 } = require('../controllers/users');
 
-router.get(
-  '/', /* celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
-    avatar: Joi.string(),
-    email: Joi.string().
-    password: Joi.string().min(8),
-  }),
-}), */ getUsers,
-);
-router.get(
-  '/me',
-  // celebrate({
-  //   user: Joi.object().keys({
-  //     _id: Joi.string().alphanum().length(24),
-  //   }),
-  // }),
-  getCurrentUser,
-);
+router.get('/', getUsers);
+router.get('/me', getCurrentUser);
 router.get('/:userId', celebrate({
   params: Joi.object().keys({
     userId: Joi.string().alphanum().length(24),
@@ -46,36 +28,3 @@ router.patch('/me/avatar', celebrate({
 }), updateAvatar);
 
 module.exports = router;
-// name: {
-//   type: String,
-//   default: 'Жак-Ив Кусто',
-//   minlength: 2,
-//   maxlength: 30,
-// },
-// about: {
-//   type: String,
-//   default: 'Исследователь',
-//   minlength: 2,
-//   maxlength: 30,
-// },
-// avatar: {
-//   type: String,
-//   default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
-// },
-// email: {
-//   type: String,
-//   required: true,
-//   unique: true,
-//   validate: {
-//     validator(v) {
-//       return validator.isEmail(v);
-//     },
-//     message: 'Неправильно введен email',
-//   },
-// },
-// password: {
-//   type: String,
-//   required: true,
-//   minlength: 8,
-//   select: false,
-// },
