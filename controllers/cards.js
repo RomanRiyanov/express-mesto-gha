@@ -31,33 +31,64 @@ const createCard = (req, res, next) => {
     });
 };
 
+// const deleteCard = (req, res, next) => {
+//   // const { cardId } = req.params.cardId;
+//   const userId = req.user._id;
+
+//   console.log(`userId ${userId}`);
+//   console.log(`req.params.cardId ${req.params.cardId}`);
+
+//   // console.log(card.owner);
+
+//   Card.findById(req.params.cardId)
+//     .orFail(() => {
+//     // const error = new Error('Передан несуществующий _id карточки');
+//     // error.statusCode = 404;
+//     // throw error;
+//       next(new NotFoundError('Передан несуществующий _id карточки'));
+//     })
+//     .then((card) => {
+//       console.log(`userId ${userId}`);
+//       console.log(`card.owner ${card.owner}`);
+//       if (userId !== card.owner) {
+//         next(new ForbiddenError('Нельзя удалять чужую карточку'));
+//       }
+//       Card.findOneAndRemove({ _id: req.params.cardId })
+//         .then((selectedCard) => res.send({ data: selectedCard }));
+//     })
+//     // .catch((err) => {
+//     //   if (err.statusCode === 404) {
+//     //     res.status(NOT_FOUND_ERROR).send({ message: err.message });
+//     //   } else if (err.name === 'CastError') {
+//     //     res.status(INPUT_ERROR).send({ message: 'Переданы некорректный _id карточки' });
+//     //   } else res.status(NOT_FOUND_ERROR).send({ message: err.message });
+//     // });
+//     .catch((err) => {
+//       if (err.name === 'CastError') {
+//         next(new InputError('Переданы некорректный _id карточки'));
+//       } else next(err);
+//     });
+// };
 const deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
-    .orFail(() => {
-    // const error = new Error('Передан несуществующий _id карточки');
-    // error.statusCode = 404;
-    // throw error;
-      next(new NotFoundError('Передан несуществующий _id карточки'));
-    })
+  const userId = req.user._id;
+  const { cardId } = req.params;
+
+  Card.findById(cardId)
     .then((card) => {
-      if (req.user._id === card.owner) {
-        res.send({ data: card });
-      } else next(new ForbiddenError('Нельзя удалять чужую карточку'));
+      if (!card) {
+        next(new NotFoundError('Передан несуществующий _id карточки'));
+      }
+      console.log(card.owner._id);
+      const owner = card.owner._id.toString();
+      console.log(owner);
+
+      if (owner !== userId) {
+        next(new ForbiddenError('Нельзя удалять чужую карточку'));
+      }
+      Card.findByIdAndDelete(cardId)
+        .then((cardSelected) => res.send({ data: cardSelected }));
     })
-    // .catch((err) => {
-    //   if (err.statusCode === 404) {
-    //     res.status(NOT_FOUND_ERROR).send({ message: err.message });
-    //   } else if (err.name === 'CastError') {
-    //     res.status(INPUT_ERROR).send({ message: 'Переданы некорректный _id карточки' });
-    //   } else res.status(NOT_FOUND_ERROR).send({ message: err.message });
-    // });
-    .catch((err) => {
-      if (err.statusCode === 404) {
-        next(new NotFoundError('Карточка с указанным _id не найдена'));
-      } else if (err.name === 'CastError') {
-        next(new InputError('Переданы некорректный _id карточки'));
-      } else next(err);
-    });
+    .catch(next);
 };
 
 const likeCard = (req, res, next) => {
