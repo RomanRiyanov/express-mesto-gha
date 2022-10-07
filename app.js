@@ -9,6 +9,8 @@ const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
 const { login, createUser } = require('./controllers/auth');
 const auth = require('./middlewares/auth');
+const { LinkRegExp } = require('./utils/constants');
+const NotFoundError = require('./errors/not_found_err');
 
 const app = express();
 
@@ -20,7 +22,7 @@ app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(/^http(s)?:\/\/(www.)?([0-9A-Za-z.@:%_/+-~#=]+)+(.[a-zA-Z]{2,3})(\/[0-9A-Za-z.@:%_/+-~#=]+)*$/),
+    avatar: Joi.string().pattern(LinkRegExp),
     email: Joi.string().email().required(),
     password: Joi.string().required(),
   }),
@@ -37,8 +39,8 @@ app.use(auth);
 app.use('/users', routerUsers);
 app.use('/cards', routerCards);
 
-app.use('*', (req, res) => {
-  res.status(404).send({ message: 'Страница не найдена' });
+app.use('*', (req, res, next) => {
+  next(new NotFoundError('Страница не найдена'));
 });
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {

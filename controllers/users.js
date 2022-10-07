@@ -2,7 +2,6 @@ const User = require('../models/user');
 
 const NotFoundError = require('../errors/not_found_err');
 const InputError = require('../errors/input_err');
-const AuthorizationError = require('../errors/auth_err');
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -13,7 +12,7 @@ const getUsers = (req, res, next) => {
 const getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .orFail(() => {
-      next(new AuthorizationError('Необходима авторизация'));
+      throw new NotFoundError('Пользователь по указанному _id не найден');
     })
     .then((user) => res.send({ data: user }))
     .catch(next);
@@ -22,13 +21,11 @@ const getCurrentUser = (req, res, next) => {
 const getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail(() => {
-      next(new NotFoundError('Пользователь по указанному _id не найден'));
+      throw new NotFoundError('Пользователь по указанному _id не найден');
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.statusCode === 404) {
-        next(new NotFoundError('Пользователь по указанному _id не найден'));
-      } else if (err.name === 'CastError') {
+      if (err.name === 'CastError') {
         next(new InputError('Переданы некорректный _id профиля'));
       } else next(err);
     });
@@ -46,13 +43,11 @@ const updateUser = (req, res, next) => {
     },
   )
     .orFail(() => {
-      next(new NotFoundError('Пользователь по указанному _id не найден'));
+      throw new NotFoundError('Пользователь по указанному _id не найден');
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.statusCode === 404) {
-        next(new NotFoundError('Пользователь по указанному _id не найден'));
-      } else if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new InputError('Переданы некорректные данные при обновлении профиля'));
       } else next(err);
     });
@@ -70,13 +65,11 @@ const updateAvatar = (req, res, next) => {
     },
   )
     .orFail(() => {
-      next(new NotFoundError('Пользователь по указанному _id не найден'));
+      throw new NotFoundError('Пользователь по указанному _id не найден');
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.statusCode === 404) {
-        next(new NotFoundError('Пользователь по указанному _id не найден'));
-      } else if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new InputError('Переданы некорректные данные при обновлении профиля'));
       } else next(err);
     });

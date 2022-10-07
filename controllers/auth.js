@@ -50,7 +50,7 @@ const login = (req, res, next) => {
           httpOnly: true,
           sameSite: true,
         })
-        .send({ email, password });
+        .send({ email });
     })
     .catch(() => {
       res.cookie('jwt', '', { expires: new Date() });

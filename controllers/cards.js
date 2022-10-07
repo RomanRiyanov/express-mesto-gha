@@ -31,19 +31,21 @@ const deleteCard = (req, res, next) => {
   Card.findById(cardId)
     .then((card) => {
       if (!card) {
-        next(new NotFoundError('Передан несуществующий _id карточки'));
+        throw new NotFoundError('Передан несуществующий _id карточки');
       }
-      console.log(card.owner._id);
       const owner = card.owner._id.toString();
-      console.log(owner);
 
       if (owner !== userId) {
-        next(new ForbiddenError('Нельзя удалять чужую карточку'));
+        throw new ForbiddenError('Нельзя удалять чужую карточку');
       }
       Card.findByIdAndDelete(cardId)
         .then((cardSelected) => res.send({ data: cardSelected }));
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new InputError('Переданы некорректные данные для постановки/снятии лайка'));
+      } else next(err);
+    });
 };
 
 const likeCard = (req, res, next) => {
@@ -53,13 +55,11 @@ const likeCard = (req, res, next) => {
     { new: true },
   )
     .orFail(() => {
-      next(new NotFoundError('Передан несуществующий _id карточки'));
+      throw new NotFoundError('Передан несуществующий _id карточки');
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.statusCode === 404) {
-        next(new NotFoundError('Передан несуществующий _id карточки'));
-      } else if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new InputError('Переданы некорректные данные для постановки/снятии лайка'));
       } else next(err);
     });
@@ -72,13 +72,11 @@ const dislikeCard = (req, res, next) => {
     { new: true },
   )
     .orFail(() => {
-      next(new NotFoundError('Передан несуществующий _id карточки'));
+      throw new NotFoundError('Передан несуществующий _id карточки');
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.statusCode === 404) {
-        next(new NotFoundError('Передан несуществующий _id карточки'));
-      } else if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new InputError('Переданы некорректные данные для постановки/снятии лайка'));
       } else next(err);
     });
